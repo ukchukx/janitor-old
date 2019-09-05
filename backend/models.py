@@ -6,7 +6,7 @@ class Schedule(models.Model):
   host = models.CharField(max_length=50, default='127.0.0.1')
   port = models.IntegerField()
   username = models.CharField(max_length=200)
-  password = models.CharField(max_length=200)
+  password = models.CharField(max_length=200, blank=True)
   schedule = models.CharField(max_length=10) # daily, weekly
   day = models.CharField(max_length=10) # day
   time = models.CharField(max_length=5) # 12:00
