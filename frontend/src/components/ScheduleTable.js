@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 
 class ScheduleTable extends Component {
   static propTypes = {
-    schedules: PropTypes.array.isRequired
+    schedules: PropTypes.array.isRequired,
+    deleteSchedule: PropTypes.func.isRequired
   };
 
   render() {
@@ -23,7 +24,7 @@ class ScheduleTable extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.schedules.map((s) => (
+            {this.props.schedules.map((s, i) => (
               <tr key={s.id}>
                 <td>{s.name}</td>
                 <td>{s.db}</td>
@@ -31,9 +32,11 @@ class ScheduleTable extends Component {
                 <td>{s.schedule === 'weekly' ? `${s.day} @ ${s.time}` : `Daily @ ${s.time}`}</td>
                 <td>
                   <div className="buttons are-small">
-                    <button className="button is-outlined">Backup now</button>
+                    <button className="button is-outlined">View</button>
                     <button className="button is-outlined">Update</button>
-                    <button className="button is-outlined is-danger">
+                    <button 
+                      onClick={(_) => this.props.deleteSchedule(i)} 
+                      className="button is-outlined is-danger">
                       Delete
                     </button>
                   </div>

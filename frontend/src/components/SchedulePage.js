@@ -14,6 +14,25 @@ class SchedulePage extends Component {
     this.setState({ schedules });
   }
 
+  deleteSchedule(index) {
+    if (! confirm('Are you sure?')) return;
+
+    const schedules = this.state.schedules;
+    const { id } = schedules[index];
+
+    fetch(`${this.state.endpoint}${id}`, {
+      method: 'delete',
+      headers: new Headers({ 'Content-Type': 'application/json' })
+    })
+    .then((response) => {
+      if (response.status === 204) {
+        delete schedules[index];
+  
+        this.setState({ schedules });
+      }      
+    });
+  }
+
   componentDidMount() {
     fetch(this.state.endpoint)
       .then(response => response.status === 200 ? response.json() : [])
@@ -23,8 +42,12 @@ class SchedulePage extends Component {
   render() {
     return (
       <React.Fragment>
-        <ScheduleForm endpoint={this.state.endpoint} updateSchedule={this.updateSchedule.bind(this)} />
-        <ScheduleTable schedules={this.state.schedules} />
+        <ScheduleForm 
+          endpoint={this.state.endpoint} 
+          updateSchedule={this.updateSchedule.bind(this)} />
+        <ScheduleTable 
+          schedules={this.state.schedules} 
+          deleteSchedule={this.deleteSchedule.bind(this)} />
       </React.Fragment>
     );
   }
