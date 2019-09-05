@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import ScheduleTable from './ScheduleTable';
 import ScheduleForm from './ScheduleForm';
+import Schedule from './Schedule';
 
 class SchedulePage extends Component {
   state = {
     schedules: [],
     updating: -1,
+    viewing: -1,
     endpoint: 'api/schedules/'
   };
 
@@ -24,7 +26,7 @@ class SchedulePage extends Component {
   deleteSchedule(index) {
     if (! confirm('Are you sure?')) return;
 
-    let { state: { endpoint, schedules, updating } } = this;
+    let { state: { endpoint, schedules, updating, viewing } } = this;
     const { id } = schedules[index];
 
     fetch(`${endpoint}${id}`, {
@@ -36,14 +38,19 @@ class SchedulePage extends Component {
         delete schedules[index];
 
         if (updating === index) updating = -1;
+        if (viewing === index) viewing = -1;
   
-        this.setState({ schedules, updating });
+        this.setState({ schedules, updating, viewing });
       }      
     });
   }
 
   selectForUpdate(updating) {
     this.setState({ updating });
+  }
+
+  view(viewing) {
+    this.setState({ viewing });
   }
 
   componentDidMount() {
@@ -53,7 +60,7 @@ class SchedulePage extends Component {
   }
 
   render() {
-    const { state: { updating, schedules } } = this;
+    const { state: { viewing, updating, schedules } } = this;
 
     return (
       <React.Fragment>
@@ -65,7 +72,14 @@ class SchedulePage extends Component {
         <ScheduleTable 
           schedules={this.state.schedules}
           selectForUpdate={this.selectForUpdate.bind(this)}
-          deleteSchedule={this.deleteSchedule.bind(this)} />
+          deleteSchedule={this.deleteSchedule.bind(this)}
+          view={this.view.bind(this)} />
+        {viewing === -1 ?
+          '' :
+          <Schedule 
+            key={viewing} 
+            schedule={schedules[viewing]} />
+        }
       </React.Fragment>
     );
   }

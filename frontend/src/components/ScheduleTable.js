@@ -5,7 +5,8 @@ class ScheduleTable extends Component {
   static propTypes = {
     schedules: PropTypes.array.isRequired,
     deleteSchedule: PropTypes.func.isRequired,
-    selectForUpdate: PropTypes.func.isRequired
+    selectForUpdate: PropTypes.func.isRequired,
+    view: PropTypes.func.isRequired
   };
 
   render() {
@@ -33,7 +34,11 @@ class ScheduleTable extends Component {
                 <td>{s.schedule === 'weekly' ? `${s.day} @ ${s.time}` : `Daily @ ${s.time}`}</td>
                 <td>
                   <div className="buttons are-small">
-                    <button className="button is-outlined">View</button>
+                    <button 
+                      onClick={(_) => this.props.view(i)}
+                      className="button is-outlined">
+                      View
+                    </button>
                     <button 
                       onClick={(_) => this.props.selectForUpdate(i)} 
                       className="button is-outlined">

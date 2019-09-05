@@ -85,7 +85,7 @@ class ScheduleForm extends Component {
     const { action, days, dbs, form, schedules, isFormValid } = this.state;
 
     return (
-      <div className="column is-two-fifths">
+      <div className="column">
         <form onSubmit={this.handleSubmit}>
           <div className="field">
             <label className="label">Database type</label>
