@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import ScheduleTable from './ScheduleTable';
+import ScheduleForm from './ScheduleForm';
 
 class SchedulePage extends Component {
   state = {
     schedules: [],
     endpoint: 'api/schedules/'
   };
+
+  updateSchedule(schedule) {
+    const schedules = [...this.state.schedules, schedule];
+
+    this.setState({ schedules });
+  }
 
   componentDidMount() {
     fetch(this.state.endpoint)
@@ -14,7 +21,12 @@ class SchedulePage extends Component {
   }
 
   render() {
-    return <ScheduleTable schedules={this.state.schedules} />;
+    return (
+      <React.Fragment>
+        <ScheduleForm endpoint={this.state.endpoint} updateSchedule={this.updateSchedule.bind(this)} />
+        <ScheduleTable schedules={this.state.schedules} />
+      </React.Fragment>
+    );
   }
 }
 
