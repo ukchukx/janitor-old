@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 class ScheduleTable extends Component {
   static propTypes = {
     schedules: PropTypes.array.isRequired,
-    deleteSchedule: PropTypes.func.isRequired
+    deleteSchedule: PropTypes.func.isRequired,
+    selectForUpdate: PropTypes.func.isRequired
   };
 
   render() {
@@ -33,7 +34,11 @@ class ScheduleTable extends Component {
                 <td>
                   <div className="buttons are-small">
                     <button className="button is-outlined">View</button>
-                    <button className="button is-outlined">Update</button>
+                    <button 
+                      onClick={(_) => this.props.selectForUpdate(i)} 
+                      className="button is-outlined">
+                      Update
+                    </button>
                     <button 
                       onClick={(_) => this.props.deleteSchedule(i)} 
                       className="button is-outlined is-danger">

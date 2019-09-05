@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 class ScheduleForm extends Component {
   static propTypes = {
     endpoint: PropTypes.string.isRequired,
-    updateSchedule: PropTypes.func.isRequired
+    updateSchedule: PropTypes.func.isRequired,
+    schedule: PropTypes.object
   };
 
   defaultForm = {
@@ -25,7 +26,8 @@ class ScheduleForm extends Component {
     schedules: ['daily', 'weekly'],
     days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     isFormValid: false,
-    form: { ...this.defaultForm }
+    action: this.props.schedule ? 'Update' : 'Create',
+    form: this.props.schedule ? this.props.schedule : { ...this.defaultForm }
   };
 
   handleChange = (e) => {
@@ -45,18 +47,20 @@ class ScheduleForm extends Component {
     e.preventDefault();
     e.stopPropagation();
 
-    fetch(this.props.endpoint, {
-      method: 'post',
-      body: JSON.stringify(this.state.form),
+    const { state: { form }, props: { endpoint, updateSchedule } } = this;
+
+    fetch(form.id ? `${endpoint}${form.id}` : endpoint, {
+      method: form.id ? 'put' : 'post',
+      body: JSON.stringify(form),
       headers: new Headers({ 'Content-Type': 'application/json' })
     })
     .then((response) => {
-      if (response.status === 201) {
+      if (Math.floor(response.status / 100) === 2) {
         this.clearForm();
         return response.json();
       }
     })
-    .then(schedule => !!schedule ? this.props.updateSchedule(schedule) : null);
+    .then(schedule => !!schedule ? updateSchedule(schedule) : null);
   };
 
   clearForm = () => {
@@ -78,7 +82,7 @@ class ScheduleForm extends Component {
   }
 
   render() {
-    const { days, dbs, form, schedules, isFormValid } = this.state;
+    const { action, days, dbs, form, schedules, isFormValid } = this.state;
 
     return (
       <div className="column is-two-fifths">
@@ -228,7 +232,7 @@ class ScheduleForm extends Component {
           </div>
           <div className="control">
             <button disabled={!isFormValid} type="submit" className="button is-info">
-              Create schedule
+              {action} schedule
             </button>
           </div>
         </form>
