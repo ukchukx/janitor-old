@@ -25,7 +25,7 @@ SECRET_KEY = '82behp90pey-40ect&$97n#uaj%@uiqo1^rgm%vd8#8&)#5t3^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'janitor.moview.com.ng']
 
 
 # Application definition
@@ -121,3 +121,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+LOGIN_URL = '/admin/login'
