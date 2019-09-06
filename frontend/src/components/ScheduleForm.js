@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 class ScheduleForm extends Component {
   static propTypes = {
@@ -41,6 +43,14 @@ class ScheduleForm extends Component {
     const form = { ...this.state.form, port, username, [e.target.name]: e.target.value };
     
     this.setState({ ...this.state, form, isFormValid: this.validateForm() });
+  }
+
+  updateTime = ([date]) => {
+    this.setState({ 
+      ...this.state, 
+      form: { ...this.state.form, time: `${date.getHours()}:${date.getMinutes()}` }, 
+      isFormValid: this.validateForm() 
+    });
   }
 
   handleSubmit = (e) => {
@@ -204,14 +214,14 @@ class ScheduleForm extends Component {
               <div className="field">
                 <label className="label">Time</label>
                 <div className="control">
-                  <input
-                    className="input"
-                    type="text"
-                    name="time"
-                    onChange={this.handleChange}
-                    value={form.time}
+                  <Flatpickr 
+                    data-enable-time
                     required
-                  />
+                    options={{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }}
+                    className="input"
+                    name="time"
+                    value={form.time}
+                    onChange={this.updateTime} />
                 </div>
               </div>
             </div>
