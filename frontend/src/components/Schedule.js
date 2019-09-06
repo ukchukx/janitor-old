@@ -9,12 +9,38 @@ class Schedule extends Component {
   };
 
   state = {
-    backups: []
+    backups: [],
+    busy: false
   };
 
   deleteBackup(index) {
     if (! confirm('Are you sure?')) return;
     //
+  }
+
+  backupNow() {
+    if (this.state.busy) return;
+
+    this.setState({ busy: true });
+
+    const { props: { endpoint, schedule } } = this;
+
+    fetch(`${endpoint}${schedule.id}/backups/create`, {
+        method: 'post',
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      })
+      .then(response => response.status === 200 ? response.json() : null)
+      .then((backup) => {
+        if (backup) {
+          let backups = this.state.backups;
+          backups.push(backup.backup);
+
+          this.setState({ backups });
+        } else {
+          alert('Could not create backup');
+        }
+      })
+      .finally(() => this.setState({ busy: false }));
   }
 
   componentDidMount() {
@@ -38,7 +64,12 @@ class Schedule extends Component {
           Schedule: {schedule.schedule === 'weekly' ? `${schedule.day} @ ${schedule.time}` : `Daily @ ${schedule.time}`}
         </span>
         <hr/>
-        <button className="button is-fullwidth is-primary is-outlined">Backup now</button>
+        <button
+          onClick={(_) => this.backupNow()}
+          disabled={this.state.busy}
+          className="button is-fullwidth is-primary is-outlined">
+          {this.state.busy ? 'Busy...' : 'Backup now'}
+        </button>
         <ScheduleBackups 
           backups={backups}
           deleteBackup={this.deleteBackup.bind(this)} />
