@@ -78,6 +78,7 @@ class SchedulePage extends Component {
           '' :
           <Schedule 
             key={viewing} 
+            endpoint={this.state.endpoint}
             schedule={schedules[viewing]} />
         }
       </React.Fragment>

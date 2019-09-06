@@ -1,4 +1,6 @@
+from os import path, listdir
 from django.db import models
+from django.conf import settings
 
 class Schedule(models.Model):
   db = models.CharField(max_length=15) # mysql, postgresql
@@ -16,6 +18,12 @@ class Schedule(models.Model):
 
   def __str__(self):
     return '{}://{}:{}/{}'.format(self.db, self.host, self.port, self.name)
+
+  def backup_path(self):
+    return path.join(settings.FILES_ROOT, str(self.id))
+  
+  def list_backups(self):
+    return listdir(self.backup_path())
 
   class Meta:
     db_table = 'schedules'

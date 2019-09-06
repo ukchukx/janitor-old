@@ -106,5 +106,5 @@ media/
 *.pyc
 *.db
 *.pid
-# django migrations 
 frontend/node_modules/
+backups
