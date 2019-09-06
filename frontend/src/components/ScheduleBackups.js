@@ -4,8 +4,13 @@ import PropTypes from 'prop-types';
 class ScheduleBackups extends Component {
   static propTypes = {
     backups: PropTypes.array.isRequired,
+    downloadEndpoint: PropTypes.string.isRequired,
     deleteBackup: PropTypes.func.isRequired
   };
+
+  downloadHref(file) {
+    return this.props.downloadEndpoint.replace('FILE', file);
+  }
 
   render() {
     const styles = { marginTop: '30px' };
@@ -28,7 +33,7 @@ class ScheduleBackups extends Component {
                     <td>{b}</td>
                     <td>
                       <div className="buttons are-small">
-                        <a target="_blank" href="javascript:;" className="button is-outlined">
+                        <a target="_blank" href={this.downloadHref(b)} className="button is-outlined">
                           Download
                         </a>
                         <button

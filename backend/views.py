@@ -3,6 +3,8 @@ import logging
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
+from django.http import Http404, HttpResponse
 from rest_framework.generics import ListCreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -77,3 +79,16 @@ def delete_backup(request, id, file):
   remove(path.join(settings.FILES_ROOT, str(id), file))
   
   return Response(status=status.HTTP_204_NO_CONTENT) 
+
+
+@login_required
+@require_GET
+def download(request, id, file):
+  file_path = path.join(settings.FILES_ROOT, str(id), file)
+  if not path.exists(file_path):
+    raise Http404
+  else:
+    with open(file_path, 'rb') as fh:
+      response = HttpResponse(fh.read(), content_type='text/plain')
+      response['Content-Disposition'] = 'attachment; filename={}'.format(path.basename(file_path))
+      return response

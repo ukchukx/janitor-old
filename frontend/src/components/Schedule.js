@@ -10,7 +10,8 @@ class Schedule extends Component {
 
   state = {
     backups: [],
-    busy: false
+    busy: false,
+    downloadEndpoint: `${this.props.endpoint}${this.props.schedule.id}/backups/FILE`
   };
 
   deleteBackup(index) {
@@ -65,7 +66,7 @@ class Schedule extends Component {
   }
 
   render() {
-    const { props: { schedule }, state: { backups } } = this;
+    const { props: { schedule }, state: { backups, busy, downloadEndpoint } } = this;
 
     return (
       <div className="column">
@@ -79,12 +80,13 @@ class Schedule extends Component {
         <hr/>
         <button
           onClick={(_) => this.backupNow()}
-          disabled={this.state.busy}
+          disabled={busy}
           className="button is-fullwidth is-primary is-outlined">
-          {this.state.busy ? 'Busy...' : 'Backup now'}
+          {busy ? 'Busy...' : 'Backup now'}
         </button>
         <ScheduleBackups 
           backups={backups}
+          downloadEndpoint={downloadEndpoint}
           deleteBackup={this.deleteBackup.bind(this)} />
       </div>
     );
