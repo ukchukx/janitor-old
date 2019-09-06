@@ -15,7 +15,20 @@ class Schedule extends Component {
 
   deleteBackup(index) {
     if (! confirm('Are you sure?')) return;
-    //
+    
+    let { props: { endpoint, schedule: { id } }, state: { backups } } = this;
+
+    fetch(`${endpoint}${id}/backups/${backups[index]}/delete`, {
+      method: 'delete',
+      headers: new Headers({ 'Content-Type': 'application/json' })
+    })
+    .then((response) => {
+      if (response.status === 204) {
+        delete backups[index];
+  
+        this.setState({ backups });
+      }      
+    });
   }
 
   backupNow() {

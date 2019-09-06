@@ -1,5 +1,6 @@
-from os import path
+from os import path, remove
 import logging
+from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from rest_framework.generics import ListCreateAPIView, UpdateAPIView, DestroyAPIView
@@ -35,6 +36,7 @@ def backups(request, id):
 
   return Response([] if not path.exists(schedule.backup_path()) else schedule.list_backups())
 
+
 @login_required
 @api_view(['POST'])
 @authentication_classes((CsrfExemptSessionAuthentication, BasicAuthentication))
@@ -66,3 +68,12 @@ def backup(request, id):
     return Response({ 'backup': file_name }) 
   else:
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@login_required
+@api_view(['DELETE'])
+@authentication_classes((CsrfExemptSessionAuthentication, BasicAuthentication))
+def delete_backup(request, id, file):
+  remove(path.join(settings.FILES_ROOT, str(id), file))
+  
+  return Response(status=status.HTTP_204_NO_CONTENT) 
