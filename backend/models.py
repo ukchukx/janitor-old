@@ -22,7 +22,7 @@ class Schedule(models.Model):
 
   def backup_path(self):
     return path.join(settings.FILES_ROOT, str(self.id))
-  
+
   def list_backups(self):
     backups = listdir(self.backup_path()) if path.exists(self.backup_path()) else []
 
@@ -37,14 +37,14 @@ class Schedule(models.Model):
 
   def backup_command(self):
     if self.db == 'mysql':
-      return 'mysqldump -h {} --port={} -u {} -p{} {} > {}'.format(
+      return 'MYSQL_PWD="{}" mysqldump -h {} --port={} -u {} {} > {}'.format(
+        self.password,
         '127.0.0.1' if self.host == 'localhost' else self.host,
         self.port,
-        self.username, 
-        self.password, 
+        self.username,
         self.name,
         self.new_file_path())
-        
+
     elif self.db == 'postgresql':
       return 'PGPASSWORD="{}" pg_dump -U {} -h {} --port={} {} > {}'.format(
         self.password,
@@ -56,6 +56,6 @@ class Schedule(models.Model):
 
     else:
       return 'echo 0'
-    
+
   class Meta:
     db_table = 'schedules'
