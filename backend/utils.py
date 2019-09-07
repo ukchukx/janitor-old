@@ -15,16 +15,27 @@ def create_dir(dirname):
       if e.errno != errno.EEXIST:
         raise
 
-def run_backups(schedules):
-
+def run_backup(schedule):
   from subprocess import run
 
-  for schedule in schedules:
-    logger.info('Running scheduled backup for {}'.format(schedule))
+  logger.info('Running scheduled backup for {}'.format(schedule))
 
-    create_dir(schedule.backup_path())
-    run(schedule.backup_command(), shell=True)
-    remove_expired_backups(schedule)
+  create_dir(schedule.backup_path())
+  run(schedule.backup_command(), shell=True)
+  remove_expired_backups(schedule)
+
+def run_backups(schedules):
+  from multiprocessing import Process
+
+  processes = []
+
+  for schedule in schedules:
+    process = Process(target=run_backup, args=(schedule,))
+    processes.append(process)
+    process.start()
+
+  for process in processes:
+    process.join()
 
 
 def removed_deleted_backups():
@@ -42,9 +53,9 @@ def remove_expired_backups(schedule):
 
   if len(backups) is 0:
     return
-  
+
   backups.sort(key=lambda b : path.getmtime(path.join(schedule.backup_path(), b)))
-  
+
   num_to_delete = len(backups) - schedule.keep
 
   if num_to_delete > 0:

@@ -48,14 +48,10 @@ def backup(request, id):
   try:
     schedule = Schedule.objects.get(pk=id)
 
-    existing_backups = schedule.list_backups()
-    
-    from threading import Thread
-    thread = Thread(target=run_backups, args=([schedule],), daemon=True)
-    thread.start()
     logger.info('Running an immediate backup for {}'.format(schedule))
-    thread.join()
 
+    existing_backups = schedule.list_backups()
+    run_backups([schedule])
     updated_backups = schedule.list_backups()
 
     if len(existing_backups) is 0:
@@ -67,7 +63,7 @@ def backup(request, id):
     file_name = 'ERR'
 
   if file_name is not 'ERR':
-    return Response({ 'backup': file_name }) 
+    return Response({ 'backup': file_name })
   else:
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -77,8 +73,8 @@ def backup(request, id):
 @authentication_classes((CsrfExemptSessionAuthentication, BasicAuthentication))
 def delete_backup(request, id, file):
   remove(path.join(settings.FILES_ROOT, str(id), file))
-  
-  return Response(status=status.HTTP_204_NO_CONTENT) 
+
+  return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @login_required
