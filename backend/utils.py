@@ -38,16 +38,21 @@ def run_backups(schedules):
     process.join()
 
 
-
 def run_eligible_backups():
   import calendar
-  now = datetime.datetime.now()
+  from pytz import timezone
+
+  now = datetime.datetime.now(timezone('Africa/Lagos'))
   day_string = calendar.day_name[now.weekday()]
+  time_string = '{}:{}'.format(now.hour, now.minute if now.minute > 9 else '0{}'.format(now.minute))
+
   logger.info('Look for and run eligible backups at {}'.format(now))
+
   # Filter out weekly schedules that aren't due today
   schedules = filter(lambda s : True if s.schedule == 'daily' else s.day == day_string, Schedule.objects.all())
-  print(list(schedules))
-
+  # Remove schedules that are not due this minute
+  schedules = filter(lambda s : s.time == time_string, schedules)
+  run_backups(list(schedules))
 
 
 def remove_deleted_backups():
@@ -76,9 +81,4 @@ def remove_expired_backups(schedule):
         remove(path.join(schedule.backup_path(), b))
       except OSError:
         pass
-
-
-def scheduled_tasks():
-  remove_deleted_backups()
-  run_elibile_backups()
 
