@@ -50,21 +50,11 @@ def backup(request, id):
 
     logger.info('Running an immediate backup for {}'.format(schedule))
 
-    existing_backups = schedule.list_backups()
     run_backups([schedule])
-    updated_backups = schedule.list_backups()
 
-    if len(existing_backups) is 0:
-      file_name = 'ERR' if len(updated_backups) is 0 else updated_backups[-1]
-    else:
-      file_name = 'ERR' if existing_backups[-1] == updated_backups[-1] else updated_backups[-1]
+    return Response(schedule.list_backups())
 
   except Schedule.DoesNotExist:
-    file_name = 'ERR'
-
-  if file_name is not 'ERR':
-    return Response({ 'backup': file_name })
-  else:
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

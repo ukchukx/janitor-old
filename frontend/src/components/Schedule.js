@@ -16,7 +16,7 @@ class Schedule extends Component {
 
   deleteBackup(index) {
     if (! confirm('Are you sure?')) return;
-    
+
     let { props: { endpoint, schedule: { id } }, state: { backups } } = this;
 
     fetch(`${endpoint}${id}/backups/${backups[index]}/delete`, {
@@ -26,9 +26,9 @@ class Schedule extends Component {
     .then((response) => {
       if (response.status === 204) {
         delete backups[index];
-  
+
         this.setState({ backups });
-      }      
+      }
     });
   }
 
@@ -44,11 +44,8 @@ class Schedule extends Component {
         headers: new Headers({ 'Content-Type': 'application/json' })
       })
       .then(response => response.status === 200 ? response.json() : null)
-      .then((backup) => {
-        if (backup) {
-          let backups = this.state.backups;
-          backups.push(backup.backup);
-
+      .then((backups) => {
+        if (backups) {
           this.setState({ backups });
         } else {
           alert('Could not create backup');
@@ -84,7 +81,7 @@ class Schedule extends Component {
           className="button is-fullwidth is-primary is-outlined">
           {busy ? 'Busy...' : 'Backup now'}
         </button>
-        <ScheduleBackups 
+        <ScheduleBackups
           backups={backups}
           downloadEndpoint={downloadEndpoint}
           deleteBackup={this.deleteBackup.bind(this)} />
