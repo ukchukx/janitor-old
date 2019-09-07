@@ -1,5 +1,4 @@
 from os import path, listdir
-from time import gmtime, strftime
 from django.db import models
 from django.conf import settings
 
@@ -33,7 +32,9 @@ class Schedule(models.Model):
     return path.join(self.backup_path(), self.new_file_name())
 
   def new_file_name(self):
-    return '{}_{}.sql'.format(self.name, strftime("%Y-%m-%d_%H:%M:%S", gmtime()))
+    from pytz import timezone
+    from datetime import datetime
+    return '{}_{}.sql'.format(self.name, datetime.now(timezone('Africa/Lagos')).strftime('%Y-%m-%d_%H:%M:%S'))
 
   def backup_command(self):
     if self.db == 'mysql':
