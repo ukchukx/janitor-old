@@ -38,7 +38,19 @@ def run_backups(schedules):
     process.join()
 
 
-def removed_deleted_backups():
+
+def run_eligible_backups():
+  import calendar
+  now = datetime.datetime.now()
+  day_string = calendar.day_name[now.weekday()]
+  logger.info('Look for and run eligible backups at {}'.format(now))
+  # Filter out weekly schedules that aren't due today
+  schedules = filter(lambda s : True if s.schedule == 'daily' else s.day == day_string, Schedule.objects.all())
+  print(list(schedules))
+
+
+
+def remove_deleted_backups():
   logger.info('Remove folders for non-existent schedules')
 
   ids = list(map(lambda s: s.id, Schedule.objects.all()))
@@ -64,3 +76,9 @@ def remove_expired_backups(schedule):
         remove(path.join(schedule.backup_path(), b))
       except OSError:
         pass
+
+
+def scheduled_tasks():
+  remove_deleted_backups()
+  run_elibile_backups()
+

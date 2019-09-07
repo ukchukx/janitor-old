@@ -14,7 +14,7 @@ from rest_framework.decorators import authentication_classes
 
 from backend.models import Schedule
 from backend.serializers import ScheduleSerializer
-from .utils import run_backups, removed_deleted_backups
+from .utils import run_backups, run_eligible_backups
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -31,6 +31,8 @@ class ScheduleView(ListCreateAPIView, UpdateAPIView, DestroyAPIView):
 @api_view(['GET'])
 @authentication_classes((CsrfExemptSessionAuthentication, BasicAuthentication))
 def backups(request, id):
+  run_eligible_backups()
+
   try:
     schedule = Schedule.objects.get(pk=id)
   except Schedule.DoesNotExist:

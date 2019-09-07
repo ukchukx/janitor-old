@@ -14,12 +14,12 @@ class SchedulePage extends Component {
   updateSchedule(schedule) {
     let { state: { schedules, updating } } = this;
 
-    schedules = updating === -1 ? 
-      [...schedules, schedule] : 
+    schedules = updating === -1 ?
+      [...schedules, schedule] :
       schedules.map(s => s.id === schedule.id ? schedule : s);
 
     updating = -1;
-    
+
     this.setState({ schedules, updating });
   }
 
@@ -39,9 +39,9 @@ class SchedulePage extends Component {
 
         if (updating === index) updating = -1;
         if (viewing === index) viewing = -1;
-  
+
         this.setState({ schedules, updating, viewing });
-      }      
+      }
     });
   }
 
@@ -64,20 +64,20 @@ class SchedulePage extends Component {
 
     return (
       <React.Fragment>
-        <ScheduleForm 
-          key={updating}
+        <ScheduleForm
+          key={`f-${updating}`}
           schedule={updating === -1 ? null : schedules[updating]}
-          endpoint={this.state.endpoint} 
+          endpoint={this.state.endpoint}
           updateSchedule={this.updateSchedule.bind(this)} />
-        <ScheduleTable 
+        <ScheduleTable
           schedules={this.state.schedules}
           selectForUpdate={this.selectForUpdate.bind(this)}
           deleteSchedule={this.deleteSchedule.bind(this)}
           view={this.view.bind(this)} />
         {viewing === -1 ?
           '' :
-          <Schedule 
-            key={viewing} 
+          <Schedule
+            key={`s-${viewing}`}
             endpoint={this.state.endpoint}
             schedule={schedules[viewing]} />
         }
