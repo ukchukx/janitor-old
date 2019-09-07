@@ -108,3 +108,4 @@ media/
 *.pid
 frontend/node_modules/
 backups
+logs

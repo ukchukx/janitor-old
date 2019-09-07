@@ -17,6 +17,8 @@ from backend.serializers import ScheduleSerializer
 from .utils import run_backups
 
 
+logger = logging.getLogger(__name__)
+
 class CsrfExemptSessionAuthentication(SessionAuthentication):
   def enforce_csrf(self, request):
     return
@@ -43,8 +45,6 @@ def backups(request, id):
 @api_view(['POST'])
 @authentication_classes((CsrfExemptSessionAuthentication, BasicAuthentication))
 def backup(request, id):
-  logger = logging.getLogger(__name__)
-
   try:
     schedule = Schedule.objects.get(pk=id)
 
@@ -55,6 +55,7 @@ def backup(request, id):
     return Response(schedule.list_backups())
 
   except Schedule.DoesNotExist:
+    logger.info('Cannot run an immediate backup as schedule with id {} not found'.format(id))
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -72,6 +73,7 @@ def delete_backup(request, id, file):
 def download(request, id, file):
   file_path = path.join(settings.FILES_ROOT, str(id), file)
   if not path.exists(file_path):
+    logger.info('Cannot download {} for id {}'.format(file, id))
     raise Http404
   else:
     with open(file_path, 'rb') as fh:

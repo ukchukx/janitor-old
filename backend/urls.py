@@ -20,4 +20,4 @@ def scheduled_tasks():
   remove_deleted_backups()
   run_eligible_backups()
 
-worker.start(block=True)
+worker.start(block=False)

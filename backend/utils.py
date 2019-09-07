@@ -27,6 +27,8 @@ def run_backup(schedule):
 def run_backups(schedules):
   from multiprocessing import Process
 
+  logger.info('Running  backups for {} schedules'.format(len(schedules)))
+
   processes = []
 
   for schedule in schedules:
