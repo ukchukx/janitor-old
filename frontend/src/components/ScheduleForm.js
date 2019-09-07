@@ -34,22 +34,25 @@ class ScheduleForm extends Component {
 
   handleChange = (e) => {
     let { form: { port, username } } = this.state;
-    
+
     if (e.target.name === 'db') {
       port = e.target.value === 'mysql' ? 3306 : 5432;
       username = e.target.value === 'mysql' ? 'root' : 'postgres';
     }
 
     const form = { ...this.state.form, port, username, [e.target.name]: e.target.value };
-    
+
     this.setState({ ...this.state, form, isFormValid: this.validateForm() });
   }
 
   updateTime = ([date]) => {
-    this.setState({ 
-      ...this.state, 
-      form: { ...this.state.form, time: `${date.getHours()}:${date.getMinutes()}` }, 
-      isFormValid: this.validateForm() 
+    let minutes = date.getMinutes();
+    if (minutes < 9) minutes = `0${minutes}`;
+
+    this.setState({
+      ...this.state,
+      form: { ...this.state.form, time: `${date.getHours()}:${minutes}` },
+      isFormValid: this.validateForm()
     });
   }
 
@@ -169,7 +172,7 @@ class ScheduleForm extends Component {
               </div>
             </div>
           </div>
-          
+
           <div className="field">
             <label className="label">Database name</label>
             <div className="control">
@@ -195,7 +198,7 @@ class ScheduleForm extends Component {
               </div>
             </div>
             {
-              form.schedule === 'weekly' ? 
+              form.schedule === 'weekly' ?
                 (
                   <div className="column">
                     <div className="field">
@@ -207,14 +210,14 @@ class ScheduleForm extends Component {
                       </div>
                     </div>
                   </div>
-                ) : 
+                ) :
                 (<p></p>)
-            }  
+            }
             <div className="column">
               <div className="field">
                 <label className="label">Time</label>
                 <div className="control">
-                  <Flatpickr 
+                  <Flatpickr
                     data-enable-time
                     required
                     options={{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }}
@@ -226,7 +229,7 @@ class ScheduleForm extends Component {
               </div>
             </div>
           </div>
-          
+
           <div className="field">
             <label className="label">Preserve last {form.keep} backups</label>
             <div className="control">
