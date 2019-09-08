@@ -70,7 +70,7 @@ def remove_deleted_backups():
 def remove_expired_backups(schedule):
   backups = schedule.list_backups()
 
-  if len(backups) is 0:
+  if len(backups) == 0:
     return
 
   backups.sort(key=lambda b : path.getmtime(path.join(schedule.backup_path(), b)))
