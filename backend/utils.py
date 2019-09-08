@@ -84,3 +84,38 @@ def remove_expired_backups(schedule):
       except OSError:
         pass
 
+
+def get_available_databases(host=None, port=None, username=None, password='', db='mysql'):
+  from subprocess import run, PIPE
+
+  if db == 'mysql':
+    host = '127.0.0.1' if host == 'localhost' else host
+    command = 'MYSQL_PWD="{}" mysql -h {} --port={} -u {} -e "show databases;"'.format(
+      password,
+      host,
+      port,
+      username
+    )
+
+    shell_output = run(command, shell=True, stdout=PIPE).stdout.decode('utf-8').split('\n')
+    return list(filter(lambda s: s != 'Database' and len(s), shell_output))
+
+  elif db == 'postgresql':
+    command = 'PGPASSWORD="{}" psql -U {} -h {} --port={} -c "select datname from pg_database;"'.format(
+      password,
+      username,
+      host,
+      port
+    )
+
+    shell_output = run(command, shell=True, stdout=PIPE).stdout.decode('utf-8').split('\n')
+    del shell_output[0] # Remove datname
+    del shell_output[0] # Remove all dashes
+    shell_output = map(lambda s: s.strip(), shell_output) # Remove paddings
+    shell_output = list(filter(lambda s: len(s), shell_output)) # Remove empty strings
+    del shell_output[-1] # Remove (x rows)
+
+    return shell_output
+
+  else:
+    return []

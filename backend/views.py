@@ -14,7 +14,7 @@ from rest_framework.decorators import authentication_classes
 
 from backend.models import Schedule
 from backend.serializers import ScheduleSerializer
-from .utils import run_backups
+from .utils import run_backups, get_available_databases
 
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,19 @@ class ScheduleView(ListCreateAPIView, UpdateAPIView, DestroyAPIView):
   authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
   queryset = Schedule.objects.all()
   serializer_class = ScheduleSerializer
+
+
+@login_required
+@api_view(['POST'])
+@authentication_classes((CsrfExemptSessionAuthentication, BasicAuthentication))
+def databases(request):
+  return Response(get_available_databases(
+    host=request.data['host'],
+    port=request.data['port'],
+    username=request.data['username'],
+    password=request.data['password'],
+    db=request.data['db']
+  ))
 
 
 @login_required

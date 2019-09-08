@@ -27,32 +27,65 @@ class ScheduleForm extends Component {
     dbs: ['mysql', 'postgresql'],
     schedules: ['daily', 'weekly'],
     days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    databases: [],
+    fetching: false,
+    canFetch: true,
     isFormValid: false,
     action: this.props.schedule ? 'Update' : 'Create',
     form: this.props.schedule ? this.props.schedule : { ...this.defaultForm }
   };
 
+  fetchDatabases = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const { state: { form: { host, port, username, password, db } }, props: { endpoint } } = this;
+
+    this.setState({ fetching: true });
+
+    fetch(`${endpoint}databases`, {
+      method: 'post',
+      body: JSON.stringify({ host, port, username, password, db }),
+      headers: new Headers({ 'Content-Type': 'application/json' })
+    })
+    .then(response => response.status === 200 ? response.json(): [])
+    .then(databases => this.setState({ databases, fetching: false }));
+  };
+
   handleChange = (e) => {
-    let { form: { port, username } } = this.state;
+    let { databases, form: { port, username } } = this.state;
+
+    if (e.target.name === 'name' && e.target.value === 'Select a database') return;
 
     if (e.target.name === 'db') {
       port = e.target.value === 'mysql' ? 3306 : 5432;
       username = e.target.value === 'mysql' ? 'root' : 'postgres';
+      databases = [];
     }
 
     const form = { ...this.state.form, port, username, [e.target.name]: e.target.value };
 
-    this.setState({ ...this.state, form, isFormValid: this.validateForm() });
+    this.setState({
+      ...this.state,
+      databases,
+      form,
+      isFormValid: this.validateForm(form),
+      canFetch: this.isServerInfoAvailable(form)
+    });
   }
 
   updateTime = ([date]) => {
     let minutes = date.getMinutes();
     if (minutes < 9) minutes = `0${minutes}`;
 
+    const form = { ...this.state.form, time: `${date.getHours()}:${minutes}` };
+
     this.setState({
       ...this.state,
-      form: { ...this.state.form, time: `${date.getHours()}:${minutes}` },
-      isFormValid: this.validateForm()
+      form,
+      isFormValid: this.validateForm(form)
     });
   }
 
@@ -77,11 +110,21 @@ class ScheduleForm extends Component {
   };
 
   clearForm = () => {
-    this.setState({ ...this.state, form: { ...this.defaultForm }, isFormValid: false });
+    let { databases, form: { db } } = this.state;
+
+    if (db === 'postgresql') databases = [];
+
+    this.setState({
+      ...this.state,
+      databases,
+      form: { ...this.defaultForm },
+      isFormValid: false,
+      canFetch: false
+    });
   }
 
-  validateForm = () => {
-    const { days, dbs, form, schedules } = this.state;
+  validateForm = (form) => {
+    const { days, dbs, schedules } = this.state;
 
     return !!form.name &&
       !!form.host &&
@@ -94,8 +137,18 @@ class ScheduleForm extends Component {
       (form.schedule === 'weekly' ? days.includes(form.day) : true);
   }
 
+  isServerInfoAvailable = ({ host, port, username, password, db }) =>
+    !!host && port && this.state.dbs.includes(db) && !!username;
+
+  componentDidMount() {
+    // If this is an update, we need to fetch databases immediately
+    if (this.state.form.id) this.fetchDatabases();
+  }
+
   render() {
-    const { action, days, dbs, form, schedules, isFormValid } = this.state;
+    const { action, days, dbs, form, schedules, isFormValid, fetching, databases, canFetch } = this.state;
+    const nameSelectClasses = `select${fetching ? ' is-loading' : ''}`;
+    const fetchButtonClasses = `button is-info is-outlined${fetching ? ' is-loading' : ''}`;
 
     return (
       <div className="column is-one-third">
@@ -173,81 +226,101 @@ class ScheduleForm extends Component {
             </div>
           </div>
 
-          <div className="field">
-            <label className="label">Database name</label>
-            <div className="control">
-              <input
-                className="input"
-                type="text"
-                name="name"
-                onChange={this.handleChange}
-                value={form.name}
-                required
-              />
-            </div>
-          </div>
+          {
+            !canFetch ? '' :
+              <div className="control" style={{ marginBottom: '10px' }}>
+                <button onClick={this.fetchDatabases} disabled={fetching} className={fetchButtonClasses}>
+                  Fetch databases
+                </button>
+              </div>
+          }
+
           <div className="columns">
             <div className="column">
               <div className="field">
-                <label className="label">Backup schedule</label>
-                <div className="select">
-                  <select name="schedule" onChange={this.handleChange} value={form.schedule}>
-                    {schedules.map(s => <option value={s} key={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
-            </div>
-            {
-              form.schedule === 'weekly' ?
-                (
-                  <div className="column">
-                    <div className="field">
-                      <label className="label">Day</label>
-                      <div className="select">
-                        <select name="day" onChange={this.handleChange} value={form.day}>
-                          {days.map(d => <option value={d} key={d}>{d}</option>)}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                ) :
-                (<p></p>)
-            }
-            <div className="column">
-              <div className="field">
-                <label className="label">Time</label>
+                <label className="label">Database</label>
                 <div className="control">
-                  <Flatpickr
-                    data-enable-time
-                    required
-                    options={{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }}
-                    className="input"
-                    name="time"
-                    value={form.time}
-                    onChange={this.updateTime} />
+                  <div className={nameSelectClasses}>
+                    <select name="name" onChange={this.handleChange} value={form.name}>
+                      <option>Select a database</option>
+                      {databases.map(d => <option value={d} key={d}>{d}</option>)}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="field">
-            <label className="label">Preserve last {form.keep} backups</label>
-            <div className="control">
-              <input
-                className="input"
-                type="number"
-                name="keep"
-                onChange={this.handleChange}
-                value={form.keep}
-                required
-              />
-            </div>
-          </div>
-          <div className="control">
-            <button disabled={!isFormValid} type="submit" className="button is-info">
-              {action} schedule
-            </button>
-          </div>
+          {/* Only show other fields if a database has been selected */
+            !!form.name ?
+            (
+              <div>
+                <div className="columns">
+                  <div className="column">
+                    <div className="field">
+                      <label className="label">Backup schedule</label>
+                      <div className="select">
+                        <select name="schedule" onChange={this.handleChange} value={form.schedule}>
+                          {schedules.map(s => <option value={s} key={s}>{s}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  {
+                    form.schedule === 'weekly' ?
+                      (
+                        <div className="column">
+                          <div className="field">
+                            <label className="label">Day</label>
+                            <div className="select">
+                              <select name="day" onChange={this.handleChange} value={form.day}>
+                                {days.map(d => <option value={d} key={d}>{d}</option>)}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      ) :
+                      ''
+                  }
+                  <div className="column">
+                    <div className="field">
+                      <label className="label">Time</label>
+                      <div className="control">
+                        <Flatpickr
+                          data-enable-time
+                          required
+                          options={{ enableTime: true, noCalendar: true, dateFormat: 'H:i' }}
+                          className="input"
+                          name="time"
+                          value={form.time}
+                          onChange={this.updateTime} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="field">
+                  <label className="label">Preserve last {form.keep} backups</label>
+                  <div className="control">
+                    <input
+                      className="input"
+                      type="number"
+                      name="keep"
+                      onChange={this.handleChange}
+                      value={form.keep}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="control">
+                  <button disabled={!isFormValid} type="submit" className="button is-info">
+                    {action} schedule
+                  </button>
+                </div>
+              </div>
+            ) :
+            ''
+          }
         </form>
       </div>
     );

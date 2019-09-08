@@ -64,6 +64,7 @@ class Schedule extends Component {
 
   render() {
     const { props: { schedule }, state: { backups, busy, downloadEndpoint } } = this;
+    const backupButtonClasses = `button is-fullwidth is-primary is-outlined${busy ? ' is-loading' : ''}`;
 
     return (
       <div className="column">
@@ -72,14 +73,11 @@ class Schedule extends Component {
         </h2>
         <h4>{schedule.db}://{schedule.host}:{schedule.port}/{schedule.name}</h4>
         <span className="tag is-dark">
-          Schedule: {schedule.schedule === 'weekly' ? `${schedule.day} @ ${schedule.time}` : `Daily @ ${schedule.time}`}
+          {schedule.schedule === 'weekly' ? `${schedule.day} @ ${schedule.time}` : `Daily @ ${schedule.time}`}
         </span>
         <hr/>
-        <button
-          onClick={(_) => this.backupNow()}
-          disabled={busy}
-          className="button is-fullwidth is-primary is-outlined">
-          {busy ? 'Busy...' : 'Backup now'}
+        <button onClick={_ => this.backupNow()} disabled={busy} className={backupButtonClasses}>
+          Backup now
         </button>
         <ScheduleBackups
           backups={backups}
