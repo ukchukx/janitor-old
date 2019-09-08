@@ -64,23 +64,52 @@ class SchedulePage extends Component {
 
     return (
       <React.Fragment>
-        <ScheduleForm
-          key={`f-${updating}`}
-          schedule={updating === -1 ? null : schedules[updating]}
-          endpoint={this.state.endpoint}
-          updateSchedule={this.updateSchedule.bind(this)} />
-        <ScheduleTable
-          schedules={this.state.schedules}
-          selectForUpdate={this.selectForUpdate.bind(this)}
-          deleteSchedule={this.deleteSchedule.bind(this)}
-          view={this.view.bind(this)} />
-        {viewing === -1 ?
-          '' :
-          <Schedule
-            key={`s-${viewing}`}
-            endpoint={this.state.endpoint}
-            schedule={schedules[viewing]} />
-        }
+        <nav className="navbar is-transparent">
+          <div className="navbar-brand">
+            <a className="navbar-item" href="/">
+              <h1 className="title">Janitor</h1>
+            </a>
+            <div className="navbar-burger burger" data-target="navbarMenu">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+
+          <div id="navbarMenu" className="navbar-menu">
+            <div className="navbar-end">
+              <div className="navbar-item">
+                <a className="button" href="/admin/logout">
+                  Log out
+                </a>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <section className="section">
+          <div className="container is-fluid">
+            <div className="columns">
+              <ScheduleForm
+                key={`f-${updating}`}
+                schedule={updating === -1 ? null : schedules[updating]}
+                endpoint={this.state.endpoint}
+                updateSchedule={this.updateSchedule.bind(this)} />
+              <ScheduleTable
+                schedules={this.state.schedules}
+                selectForUpdate={this.selectForUpdate.bind(this)}
+                deleteSchedule={this.deleteSchedule.bind(this)}
+                view={this.view.bind(this)} />
+              {viewing === -1 ?
+                '' :
+                <Schedule
+                  key={`s-${viewing}`}
+                  endpoint={this.state.endpoint}
+                  schedule={schedules[viewing]} />
+                }
+            </div>
+          </div>
+        </section>
       </React.Fragment>
     );
   }
