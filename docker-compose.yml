@@ -1,0 +1,14 @@
+version: '3'
+services:
+  janitor:
+    build: .
+    image: janitor
+    container_name: janitor
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - JANITOR_DEBUG=False
+    volumes:
+      - "${PWD}/backups:/janitor/backups"
+      - "${PWD}/logs:/janitor/logs"
+      - "${PWD}/db.sqlite3:/janitor/db.sqlite3"
