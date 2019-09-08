@@ -1,0 +1,31 @@
+version: v1.0
+name: Deploy Janitor to production
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Transfer
+    task:
+      secrets:
+        - name: ssh-key
+      jobs:
+        - name: transfer
+          commands:
+            - cache restore image-$SEMAPHORE_WORKFLOW_ID
+            - cache restore dockercompose-$SEMAPHORE_WORKFLOW_ID
+            - echo 'Transferring app to production...'
+            - chmod 0600 ~/ssh-key/id_rsa*
+            - scp -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no img.tar.gz docker-compose.yml ubuntu@109.237.25.250:~/apps/janitor/
+
+  - name: Deploy
+    task:
+      secrets:
+        - name: ssh-key
+      jobs:
+        - name: deploy
+          commands:
+            - echo 'Deploying app on server...'
+            - chmod 0600 ~/ssh-key/id_rsa*
+            - ssh -i ~/ssh-key/id_rsa -o StrictHostKeyChecking=no ubuntu@109.237.25.250 'cd ~/apps/janitor;docker load -i img.tar.gz;docker-compose up -d'
+
