@@ -14,4 +14,6 @@ RUN pip3 install -r requirements.txt --no-cache-dir && \
 
 COPY . .
 
+RUN python3 manage.py collectstatic --noinput
+
 CMD ["./start.sh"]
