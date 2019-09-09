@@ -10,6 +10,7 @@ RUN apk update && \
 COPY requirements.txt .
 
 RUN pip3 install -r requirements.txt --no-cache-dir && \
+  pip3 install --upgrade https://github.com/ukchukx/timeloop/zipball/master && \
   mkdir logs backups
 
 COPY . .
