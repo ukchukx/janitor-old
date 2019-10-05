@@ -30,10 +30,12 @@ class ScheduleTable extends Component {
             {this.props.schedules.map((s, i) => (
               <tr key={s.id}>
                 <td>{s.name}</td>
-                <td>{s.db}</td>
+                <td>
+                  <span className="tag">{s.db}</span>
+                </td>
                 <td>{s.host}</td>
                 <td>{s.schedule === 'weekly' ? `${s.day} @ ${s.time}` : `Daily @ ${s.time}`}</td>
-                <td>{s.keep}</td>
+                <td>{s.keep} backups</td>
                 <td>
                   <div className="buttons are-small">
                     <button
