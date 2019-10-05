@@ -22,6 +22,7 @@ class ScheduleTable extends Component {
               <th>Database</th>
               <th>Host</th>
               <th>Schedule</th>
+              <th>Keep</th>
               <th></th>
             </tr>
           </thead>
@@ -32,20 +33,21 @@ class ScheduleTable extends Component {
                 <td>{s.db}</td>
                 <td>{s.host}</td>
                 <td>{s.schedule === 'weekly' ? `${s.day} @ ${s.time}` : `Daily @ ${s.time}`}</td>
+                <td>{s.keep}</td>
                 <td>
                   <div className="buttons are-small">
-                    <button 
+                    <button
                       onClick={(_) => this.props.view(i)}
                       className="button is-outlined">
                       View
                     </button>
-                    <button 
-                      onClick={(_) => this.props.selectForUpdate(i)} 
+                    <button
+                      onClick={(_) => this.props.selectForUpdate(i)}
                       className="button is-outlined">
                       Update
                     </button>
-                    <button 
-                      onClick={(_) => this.props.deleteSchedule(i)} 
+                    <button
+                      onClick={(_) => this.props.deleteSchedule(i)}
                       className="button is-outlined is-danger">
                       Delete
                     </button>
