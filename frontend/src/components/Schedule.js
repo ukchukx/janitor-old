@@ -11,6 +11,7 @@ class Schedule extends Component {
   state = {
     backups: [],
     busy: false,
+    loading: true,
     downloadEndpoint: `${this.props.endpoint}${this.props.schedule.id}/backups/FILE`
   };
 
@@ -59,11 +60,11 @@ class Schedule extends Component {
 
     fetch(`${endpoint}${schedule.id}/backups`)
       .then(response => response.status === 200 ? response.json() : [])
-      .then(backups => this.setState({ backups }));
+      .then(backups => this.setState({ backups, loading: false }));
   }
 
   render() {
-    const { props: { schedule }, state: { backups, busy, downloadEndpoint } } = this;
+    const { props: { schedule }, state: { backups, busy, downloadEndpoint, loading } } = this;
     const backupButtonClasses = `button is-fullwidth is-primary is-outlined${busy ? ' is-loading' : ''}`;
 
     return (
@@ -79,10 +80,15 @@ class Schedule extends Component {
         <button onClick={_ => this.backupNow()} disabled={busy} className={backupButtonClasses}>
           Backup now
         </button>
-        <ScheduleBackups
-          backups={backups}
-          downloadEndpoint={downloadEndpoint}
-          deleteBackup={this.deleteBackup.bind(this)} />
+        {
+          loading ?
+            <progress className="progress is-small is-info" style={{ marginTop: '10px' }}>Loading...</progress>
+           :
+            <ScheduleBackups
+              backups={backups}
+              downloadEndpoint={downloadEndpoint}
+              deleteBackup={this.deleteBackup.bind(this)} />
+        }
       </div>
     );
   }
