@@ -12,6 +12,9 @@ With Docker:
 * Access the app on port 20000.
 
 Without Docker (plain Django):
+* Create logs & backup dirs with `mkdir -p logs backups`
+* Build Frontend Artefacts with
+  `cd frontend && npm install && npm run build && cd ..`
 * Install requirements with `pip install -r requirements.txt`.
 * Start the app with `python manage.py runserver`.
 * Visit [localhost:8000](http://localhost:8000).

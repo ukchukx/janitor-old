@@ -1,3 +1,3 @@
 #!/bin/bash
-cd frontend && npm run build && cd ..
+cd frontend && npm install && npm run build && cd ..
 docker build -t janitor .
