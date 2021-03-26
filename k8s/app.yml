@@ -23,6 +23,18 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 60
         env:
         - name: JANITOR_DEBUG
           value: 'False'
