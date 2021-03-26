@@ -21,7 +21,6 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cd frontend; npm i; cd ..
       jobs:
         - name: build image
           commands:
