@@ -9,7 +9,7 @@ Set the `JANITOR_DEBUG` environment variable to `True` if you want the app to ru
 With Docker:
 * Build a Docker image with `./build.sh`
 * Start the Docker container with `docker-compose up`.
-* Access the app on port 20000.
+* Access the app on port 8000.
 
 Without Docker (plain Django):
 * Create logs & backup dirs with `mkdir -p logs backups`
