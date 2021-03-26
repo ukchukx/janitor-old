@@ -147,14 +147,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django_%s.log' % (datetime.now().strftime('%Y-%m-%d'))),
-            'backupCount': 7,
-            'when': 'midnight',
-            'formatter': 'verbose'
-        },
         'console': {
             'level': 'INFO',
             'filters': ['require_debug_true'],
@@ -168,7 +160,7 @@ LOGGING = {
             'propagate': True,
         },
         'backend': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
         }
     },
