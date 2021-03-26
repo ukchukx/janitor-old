@@ -16,7 +16,7 @@ urlpatterns = [
 
 worker = Timeloop()
 
-@worker.job(interval=timedelta(seconds=60))
+@worker.job(interval=timedelta(seconds=3600))
 def scheduled_tasks():
   remove_deleted_backups()
   run_eligible_backups()
