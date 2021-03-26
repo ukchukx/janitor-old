@@ -16,6 +16,8 @@ blocks:
 
   - name: Build Docker image
     task:
+      secrets:
+        - name: headless-commerce-pat
       prologue:
         commands:
           - checkout
@@ -24,13 +26,14 @@ blocks:
         - name: build image
           commands:
             - ./build.sh
-            - docker save -o img.tar.gz janitor
-            - cache store image-$SEMAPHORE_WORKFLOW_ID img.tar.gz
-            - cache store dockercompose-$SEMAPHORE_WORKFLOW_ID docker-compose.yml
+            - echo $HEADLESS_COMMERCE_PAT | docker login ghcr.io -u ukchukx --password-stdin
+            - docker image tag janitor ghcr.io/headless-commerce/janitor
+            - docker image push ghcr.io/headless-commerce/janitor
+            - cache store k8s-$SEMAPHORE_WORKFLOW_ID k8s
 
 promotions:
   - name: Deploy
-    pipeline_file: production-deploy.yml
+    pipeline_file: deploy.yml
     auto_promote_on:
       - result: passed
         branch:

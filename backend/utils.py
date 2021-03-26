@@ -58,6 +58,9 @@ def run_eligible_backups():
 
 
 def remove_deleted_backups():
+  if not path.exists(settings.FILES_ROOT):
+    return
+  
   logger.info('Remove folders for non-existent schedules')
 
   ids = list(map(lambda s: s.id, Schedule.objects.all()))
