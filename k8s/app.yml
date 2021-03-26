@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: janitor
+  namespace: janitor
+  labels:
+    app: janitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: janitor
+  template:
+    metadata:
+      labels:
+        app: janitor
+    spec:
+      imagePullSecrets:
+      - name: headless-commerce-package-access-token
+      containers:
+      - name: janitor
+        image: ghcr.io/headless-commerce/janitor
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: JANITOR_DEBUG
+          value: 'False'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: janitor
+  namespace: janitor
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 8000
+  selector:
+    app: janitor
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: janitor-web
+  namespace: janitor
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`janitor.moview.com.ng`)
+    services:
+    - name: janitor
+      port: 80
+    middlewares:
+    - name: security
+      namespace: default
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: janitor-web-tls
+  namespace: janitor
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`janitor.moview.com.ng`)
+    services:
+    - name: janitor
+      port: 80
+    middlewares:
+    - name: security
+      namespace: default
+  tls:
+    certResolver: le
+    domains:
+    - main: "moview.com.ng"
+      sans:
+      - "*.moview.com.ng"
+    options:
+      name: mytlsoption
+      namespace: default

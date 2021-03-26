@@ -15,7 +15,7 @@ blocks:
           - cache restore k8s-$SEMAPHORE_WORKFLOW_ID
           - chmod 0600 ~/j-master-ssh/id_rsa*
           - echo 'Transferring k8s YAMLs to production...'
-          - scp -i ~/j-master-ssh/id_rsa -o StrictHostKeyChecking=no k8s/{app,db}.yml ubuntu@212.71.237.8:~/apps/janitor/
+          - scp -i ~/j-master-ssh/id_rsa -o StrictHostKeyChecking=no k8s/app.yml ubuntu@212.71.237.8:~/apps/janitor/
 
   - name: Deploy
     task:
