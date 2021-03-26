@@ -38,6 +38,11 @@ spec:
         env:
         - name: JANITOR_DEBUG
           value: 'False'
+        - name: JANITOR_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: janitor-secrets
+              key: secretKey
 ---
 kind: Service
 apiVersion: v1
