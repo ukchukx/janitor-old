@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: janitor
+  namespace: janitor
+  labels:
+    app: janitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: janitor
+  template:
+    metadata:
+      labels:
+        app: janitor
+    spec:
+      imagePullSecrets:
+      - name: headless-commerce-package-access-token
+      containers:
+      - name: janitor
+        image: ghcr.io/headless-commerce/janitor
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 60
+        env:
+        - name: JANITOR_DEBUG
+          value: 'False'
+        - name: JANITOR_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: janitor-secrets
+              key: secretKey
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: janitor
+  namespace: janitor
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 8000
+  selector:
+    app: janitor
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: janitor-web
+  namespace: janitor
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`janitor.local`)
+    services:
+    - name: janitor
+      port: 80
