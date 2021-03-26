@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '82behp90pey-40ect&$97n#uaj%@uiqo1^rgm%vd8#8&)#5t3^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('JANITOR_DEBUG', 'True') == 'True'
+DEBUG = os.getenv('JANITOR_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'janitor.moview.com.ng']
 
