@@ -26,4 +26,4 @@ blocks:
           commands:
           - echo 'Deploying on server...'
           - chmod 0600 ~/j-master-ssh/id_rsa*
-          - ssh -i ~/j-master-ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@212.71.237.8 'cd ~/apps/janitor;/snap/bin/microk8s kubectl delete -f app.yml;/snap/bin/microk8s kubectl apply -f app.yml'
+          - ssh -i ~/j-master-ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@212.71.237.8 'cd ~/apps/janitor;/snap/bin/microk8s kubectl apply -f app.yml'
