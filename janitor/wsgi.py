@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
-from janitor import migrate
+from janitor import startup_tasks
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'janitor.settings')
 try:
@@ -21,7 +21,7 @@ except ImportError as exc:
       "available on your PYTHONPATH environment variable? Did you "
       "forget to activate a virtual environment?"
   ) from exc
-migrate.run()
-migrate.create_superuser()
+startup_tasks.run_migrations()
+startup_tasks.create_superuser()
 
 application = get_wsgi_application()

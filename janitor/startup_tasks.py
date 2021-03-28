@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def run():
+def run_migrations():
   from django.core.management import execute_from_command_line
   execute_from_command_line(['manage.py', 'migrate'])
 
@@ -16,6 +16,10 @@ def create_superuser():
   username = settings.SUPERUSER_USERNAME
   email = settings.SUPERUSER_EMAIL
   password = settings.SUPERUSER_PASSWORD
+
+  if username is None and email is None and password is None:
+    logger.info('Environment variables not set. Skip superuser creation.')
+    return
 
   logger.info('Checking if the superuser exists.')
   

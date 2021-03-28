@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from janitor import migrate
+from janitor import startup_tasks
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'janitor.settings')
@@ -14,8 +14,8 @@ def main():
           "available on your PYTHONPATH environment variable? Did you "
           "forget to activate a virtual environment?"
       ) from exc
-    migrate.run()
-    migrate.create_superuser()
+    startup_tasks.run_migrations()
+    startup_tasks.create_superuser()
     execute_from_command_line(sys.argv)
 
 
