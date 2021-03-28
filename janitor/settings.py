@@ -26,6 +26,10 @@ SECRET_KEY = os.getenv('JANITOR_SECRET_KEY', 'secret')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('JANITOR_DEBUG', 'True') == 'True'
 
+SUPERUSER_EMAIL = os.environ['DJANGO_SUPERUSER_EMAIL']
+SUPERUSER_USERNAME = os.environ['DJANGO_SUPERUSER_USERNAME']
+SUPERUSER_PASSWORD = os.environ['DJANGO_SUPERUSER_PASSWORD']
+
 ALLOWED_HOSTS = ['*']
 
 

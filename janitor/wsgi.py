@@ -22,5 +22,6 @@ except ImportError as exc:
       "forget to activate a virtual environment?"
   ) from exc
 migrate.run()
+migrate.create_superuser()
 
 application = get_wsgi_application()

@@ -43,6 +43,21 @@ spec:
             secretKeyRef:
               name: janitor-secrets
               key: secretKey
+        - name: DJANGO_SUPERUSER_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: janitor-secrets
+              key: superuserEmail
+        - name: DJANGO_SUPERUSER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: janitor-secrets
+              key: superuserPassword
+        - name: DJANGO_SUPERUSER_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: janitor-secrets
+              key: superuserUsername
 ---
 kind: Service
 apiVersion: v1
