@@ -31,5 +31,5 @@ def create_superuser():
 
     try:
       User.objects.create_superuser(username=username, email=email, password=password)
-    except IntegrityError:
-      logger.error('Username taken.')
+    except Exception:
+      logger.error('Could not create superuser.')
