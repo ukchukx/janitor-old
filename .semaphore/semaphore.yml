@@ -18,6 +18,7 @@ blocks:
     task:
       secrets:
         - name: headless-commerce-pat
+        - name: janitor-env-vars
       prologue:
         commands:
           - checkout
