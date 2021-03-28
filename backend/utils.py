@@ -3,9 +3,23 @@ import logging
 from os import path, makedirs, remove, rmdir, listdir
 import sched, time, datetime
 from django.conf import settings
+from apscheduler.schedulers.background import BackgroundScheduler
 from .models import Schedule
 
 logger = logging.getLogger(__name__)
+
+def periodic_task():
+  logger.info('Remove deleted backups and run eligible backups')
+  remove_deleted_backups()
+  run_eligible_backups()
+
+
+def start_schedule():
+  logger.info('Setup periodic tasks')
+  scheduler = BackgroundScheduler()
+  scheduler.add_job(periodic_task, 'interval', seconds=15)
+  scheduler.start()
+
 
 def create_dir(dirname):
   if not path.exists(dirname):
@@ -25,6 +39,10 @@ def run_backup(schedule):
   remove_expired_backups(schedule)
 
 def run_backups(schedules):
+  if len(schedules) == 0:
+    logger.info('No schedules passed. Cannot run backup.')
+    return
+  
   from multiprocessing import Process
 
   logger.info('Running  backups for {} schedules'.format(len(schedules)))
@@ -59,6 +77,8 @@ def run_eligible_backups():
 
 def remove_deleted_backups():
   if not path.exists(settings.FILES_ROOT):
+    logger.info('FILES_ROOT does not exist. Creating...')
+    create_dir(settings.FILES_ROOT)
     return
   
   logger.info('Remove folders for non-existent schedules')
