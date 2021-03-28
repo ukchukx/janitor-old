@@ -17,7 +17,7 @@ def periodic_task():
 def start_schedule():
   logger.info('Setup periodic tasks')
   scheduler = BackgroundScheduler()
-  scheduler.add_job(periodic_task, 'interval', seconds=15)
+  scheduler.add_job(periodic_task, 'interval', minutes=60)
   scheduler.start()
 
 
