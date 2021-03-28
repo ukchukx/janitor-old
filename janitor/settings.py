@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv('JANITOR_SECRET_KEY', 'secret')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('JANITOR_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'janitor.moview.com.ng']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
