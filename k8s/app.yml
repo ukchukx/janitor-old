@@ -49,15 +49,15 @@ spec:
             secretKeyRef:
               name: janitor-secrets
               key: secretKey
-        volumes:
-        - name: janitor-db
-          hostPath:
-            path: /var/microk8s/data/janitor/db.sqlite3
-            type: FileOrCreate
-        - name: janitor-backups
-          hostPath:
-            path: /var/microk8s/data/janitor/backups
-            type: DirectoryOrCreate
+      volumes:
+      - name: janitor-db
+        hostPath:
+          path: /var/microk8s/data/janitor/db.sqlite3
+          type: FileOrCreate
+      - name: janitor-backups
+        hostPath:
+          path: /var/microk8s/data/janitor/backups
+          type: DirectoryOrCreate
 ---
 kind: Service
 apiVersion: v1
