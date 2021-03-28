@@ -10,6 +10,7 @@ def run_migrations():
 
 def create_superuser():
   from django.contrib.auth import get_user_model
+  from sqlite3 import IntegrityError
   from janitor import settings
 
   User = get_user_model()
@@ -21,10 +22,14 @@ def create_superuser():
     logger.info('Environment variables not set. Skip superuser creation.')
     return
 
-  logger.info('Checking if the superuser exists.')
+  superuser_exists = User.objects.filter(username=username).exists()
+
+  logger.info('Does superuser exists? {}'.format(superuser_exists))
   
-  if not User.objects.filter(username=username).exists():
-    logger.info('Superuser not found. Creating...')
-    User.objects.create_superuser(username=username, email=email, password=password)
-  else:
-    logger.info('Superuser exists.')
+  if not superuser_exists:
+    logger.info('Creating superuser.')
+
+    try:
+      User.objects.create_superuser(username=username, email=email, password=password)
+    except IntegrityError:
+      logger.error('Username taken.')
